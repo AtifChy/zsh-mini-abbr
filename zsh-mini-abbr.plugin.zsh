@@ -40,7 +40,7 @@ function zma::no_expand {
   LBUFFER+=' '
 }
 
-function zma::reset_tips_status {
+function zma::reset_status {
   _ZSH_MINI_ABBR_STATUS=0
 }
 
@@ -56,7 +56,7 @@ function zma::init {
   bindkey '^[[F' zma::expand_and_end_of_line
 
   autoload -Uz add-zsh-hook
-  add-zsh-hook precmd zma::reset_tips_status
+  add-zsh-hook precmd zma::reset_status
 }
 
 function zma::show {
