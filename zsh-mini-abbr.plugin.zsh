@@ -1,8 +1,8 @@
-typeset -gr _ZSH_MINI_ABBR_VERSION="v0.1.0"
+typeset -gr _ZSH_MINI_ABBR_VERSION="v0.1.1"
 typeset -gA _zsh_mini_abbrs
 typeset -gi _ZSH_MINI_ABBR_STATUS
 
-function zma::register {
+function _zsh_mini_abbr::register {
   local kind=$1 key=${2%%=*} value=${2#*=}
   case $kind in
     g) alias -g $key=$value ;;
@@ -12,7 +12,7 @@ function zma::register {
   _zsh_mini_abbrs[$key]="$kind\0$value"
 }
 
-function zma::expand {
+function _zsh_mini_abbr::expand {
   local word=${${(Az)LBUFFER}[-1]}
   local abbr=${_zsh_mini_abbrs[$word]}
   if [[ -n $abbr ]]; then
@@ -21,45 +21,45 @@ function zma::expand {
   fi
 }
 
-function zma::expand_and_insert {
-  zle zma::expand
+function _zsh_mini_abbr::expand_and_insert {
+  zle _zsh_mini_abbr::expand
   zle self-insert
 }
 
-function zma::expand_and_accept_line {
-  zle zma::expand
+function _zsh_mini_abbr::expand_and_accept_line {
+  zle _zsh_mini_abbr::expand
   zle accept-line
 }
 
-function zma::expand_and_end_of_line {
-  zle zma::expand
+function _zsh_mini_abbr::expand_and_end_of_line {
+  zle _zsh_mini_abbr::expand
   zle end-of-line
 }
 
-function zma::no_expand {
-  LBUFFER+=' '
+function _zsh_mini_abbr::no_expand {
+  LBUFFER+=(' ')
 }
 
-function zma::reset_status {
+function _zsh_mini_abbr::reset_status {
   _ZSH_MINI_ABBR_STATUS=0
 }
 
-function zma::init {
-  zle -N zma::expand
-  zle -N zma::expand_and_insert
-  zle -N zma::no_expand
-  zle -N zma::expand_and_accept_line
-  zle -N zma::expand_and_end_of_line
-  bindkey ' '    zma::expand_and_insert
-  bindkey '^ '   zma::no_expand
-  bindkey '^M'   zma::expand_and_accept_line
-  bindkey '^[[F' zma::expand_and_end_of_line
+function _zsh_mini_abbr::init {
+  zle -N _zsh_mini_abbr::expand
+  zle -N _zsh_mini_abbr::expand_and_insert
+  zle -N _zsh_mini_abbr::no_expand
+  zle -N _zsh_mini_abbr::expand_and_accept_line
+  zle -N _zsh_mini_abbr::expand_and_end_of_line
+  bindkey ' '    _zsh_mini_abbr::expand_and_insert
+  bindkey '^ '   _zsh_mini_abbr::no_expand
+  bindkey '^M'   _zsh_mini_abbr::expand_and_accept_line
+  bindkey '^[[F' _zsh_mini_abbr::expand_and_end_of_line
 
   autoload -Uz add-zsh-hook
-  add-zsh-hook precmd zma::reset_status
+  add-zsh-hook precmd _zsh_mini_abbr::reset_status
 }
 
-function zma::show {
+function _zsh_mini_abbr::show {
   local kind_filter=$1
   local key=$2
   local abbr=${_zsh_mini_abbrs[$key]}
@@ -72,16 +72,16 @@ function zma::show {
   return 0
 }
 
-function zma::list {
+function _zsh_mini_abbr::list {
   local kind_filters=$1
   for kind_filter in ${(s::)kind_filters}; do
     for key in ${(ko)_zsh_mini_abbrs}; do
-      zma::show $kind_filter $key
+      _zsh_mini_abbr::show $kind_filter $key
     done
   done
 }
 
-function zma::unregister {
+function _zsh_mini_abbr::unregister {
   local key=$1
   if [[ -n $_zsh_mini_abbrs[$key] ]]; then
     unalias $key
@@ -92,7 +92,7 @@ function zma::unregister {
   fi
 }
 
-function zma::help {
+function _zsh_mini_abbr::help {
   print -P "%B%F{blue}abbr%f%b is a command to manage abbreviations.
 
 %U%BUSAGE:%b%u
@@ -114,13 +114,13 @@ function abbr {
     {g,-global}=global
 
   if (( $#help )); then
-    zma::help
+    _zsh_mini_abbr::help
     return 0
   fi
 
   if (( $#unset )); then
     for key in $@; do
-      zma::unregister $key
+      _zsh_mini_abbr::unregister $key
     done
     return 0
   fi
@@ -133,16 +133,16 @@ function abbr {
   fi
 
   if (( ! $# )); then
-    zma::list ${kind:-gc}
+    _zsh_mini_abbr::list ${kind:-gc}
     return 0
   fi
 
   local result=0
   while (( $# )); do
     if [[ $1 =~ "=" ]]; then
-      zma::register ${kind:-c} $1
+      _zsh_mini_abbr::register ${kind:-c} $1
     else
-      zma::show ${kind:-c} $1
+      _zsh_mini_abbr::show ${kind:-c} $1
       if [[ $? != 0 ]]; then
         result=1
       fi
@@ -152,5 +152,5 @@ function abbr {
   return $result
 }
 
-zma::init
-unfunction zma::init
+_zsh_mini_abbr::init
+unfunction _zsh_mini_abbr::init
