@@ -37,7 +37,7 @@ function _zsh_mini_abbr::expand_and_end_of_line {
 }
 
 function _zsh_mini_abbr::no_expand {
-  LBUFFER+=(' ')
+  LBUFFER+=' '
 }
 
 function _zsh_mini_abbr::reset_status {
