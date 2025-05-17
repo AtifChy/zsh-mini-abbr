@@ -1,4 +1,4 @@
-typeset -gr _ZSH_MINI_ABBR_VERSION="v0.1.1"
+typeset -gr _ZSH_MINI_ABBR_VERSION="v0.2.0"
 typeset -gA _zsh_mini_abbrs
 typeset -gi _ZSH_MINI_ABBR_STATUS
 
@@ -12,7 +12,7 @@ function _zsh_mini_abbr::register {
   _zsh_mini_abbrs[$key]="$kind\0$value"
 }
 
-function _zsh_mini_abbr::expand {
+function mini-abbr-expand {
   local word=${${(Az)LBUFFER}[-1]}
   local abbr=${_zsh_mini_abbrs[$word]}
   if [[ -n $abbr ]]; then
@@ -21,22 +21,22 @@ function _zsh_mini_abbr::expand {
   fi
 }
 
-function _zsh_mini_abbr::expand_and_insert {
-  zle _zsh_mini_abbr::expand
+function mini-abbr-expand-and-insert {
+  zle mini-abbr-expand
   zle self-insert
 }
 
-function _zsh_mini_abbr::expand_and_accept_line {
-  zle _zsh_mini_abbr::expand
+function mini-abbr-expand-and-accept-line {
+  zle mini-abbr-expand
   zle accept-line
 }
 
-function _zsh_mini_abbr::expand_and_end_of_line {
-  zle _zsh_mini_abbr::expand
+function mini-abbr-expand-and-end-of-line {
+  zle mini-abbr-expand
   zle end-of-line
 }
 
-function _zsh_mini_abbr::no_expand {
+function mini-abbr-no-expand {
   LBUFFER+=' '
 }
 
@@ -45,15 +45,15 @@ function _zsh_mini_abbr::reset_status {
 }
 
 function _zsh_mini_abbr::init {
-  zle -N _zsh_mini_abbr::expand
-  zle -N _zsh_mini_abbr::expand_and_insert
-  zle -N _zsh_mini_abbr::no_expand
-  zle -N _zsh_mini_abbr::expand_and_accept_line
-  zle -N _zsh_mini_abbr::expand_and_end_of_line
-  bindkey ' '    _zsh_mini_abbr::expand_and_insert
-  bindkey '^ '   _zsh_mini_abbr::no_expand
-  bindkey '^M'   _zsh_mini_abbr::expand_and_accept_line
-  bindkey '^[[F' _zsh_mini_abbr::expand_and_end_of_line
+  zle -N mini-abbr-expand
+  zle -N mini-abbr-expand-and-insert
+  zle -N mini-abbr-no-expand
+  zle -N mini-abbr-expand-and-accept-line
+  zle -N mini-abbr-expand-and-end-of-line
+  bindkey ' '    mini-abbr-expand-and-insert
+  bindkey '^ '   mini-abbr-no-expand
+  bindkey '^M'   mini-abbr-expand-and-accept-line
+  bindkey '^[[F' mini-abbr-expand-and-end-of-line
 
   autoload -Uz add-zsh-hook
   add-zsh-hook precmd _zsh_mini_abbr::reset_status
