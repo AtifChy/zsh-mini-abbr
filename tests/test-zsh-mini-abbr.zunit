@@ -1,0 +1,47 @@
+#!/usr/bin/env zunit
+
+@setup {
+  load "../zsh-mini-abbr.zsh"
+}
+
+@test 'registers and expands a command abbreviation' {
+  abbr foo=echo
+  run abbr "foo"
+  assert "$output" equals 'foo=echo'
+  assert "$state" equals 0
+}
+
+@test 'registers and expands a global abbreviation' {
+  abbr -g bar=ls
+  run abbr -g "bar"
+  assert "$output" equals 'bar=ls'
+  assert "$state" equals 0
+}
+
+@test 'lists all abbreviations' {
+  abbr foo=echo
+  abbr -g bar=ls
+  run abbr
+  
+  output=${(z)output}
+  assert "${output[1]}" equals 'foo=echo'
+  assert "${output[2]}" equals 'bar=ls'
+}
+
+@test 'shows help with -h' {
+  run abbr -h
+  assert "$output" contains 'USAGE'
+  assert "$output" contains 'OPTIONS'
+}
+
+@test 'unregisters an abbreviation' {
+  abbr foo=echo
+  unabbr foo
+  run abbr foo
+  assert "$state" equals 1
+}
+
+@test 'unregisters a non-existent abbreviation returns error' {
+  run unabbr notfound
+  assert "$state" equals 1
+}
