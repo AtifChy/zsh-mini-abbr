@@ -1,0 +1,44 @@
+#compdef abbr unabbr
+
+# Completion for abbr and unabbr commands
+
+function _abbr() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-c --command)'{-c,--command}'[register as command alias]' \
+    '(-g --global)'{-g,--global}'[register as global alias]' \
+    '(-u --unset)'{-u,--unset}'[unset abbreviation]' \
+    '(-h --help)'{-h,--help}'[show help]' \
+    '*:abbr:->abbreviations' && return 0
+
+  case $state in
+    abbreviations)
+      if (( $words[(I)-u|--unset] )); then
+        # Complete only existing abbreviations for unset
+        local -a abbrs
+        abbrs=(${(k)_zsh_mini_abbrs})
+        _describe 'abbreviation' abbrs
+      elif (( $words[(I)-c|--command] || $words[(I)-g|--global] )); then
+        # Complete name=command for new abbreviations
+        _message 'name=command'
+      else
+        # Complete both existing abbreviations and name=command
+        local -a abbrs
+        abbrs=(${(k)_zsh_mini_abbrs})
+        _alternative \
+          'abbrs:existing abbreviation:compadd -a abbrs'
+      fi
+      ;;
+  esac
+}
+
+function _unabbr() {
+  local -a abbrs
+  abbrs=(${(k)_zsh_mini_abbrs})
+  _describe 'abbreviation' abbrs
+}
+
+compdef _abbr abbr
+compdef _unabbr unabbr
