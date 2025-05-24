@@ -22,10 +22,8 @@
   abbr foo=echo
   abbr -g bar=ls
   run abbr
-  
-  output=${(z)output}
-  assert "${output[1]}" equals 'foo=echo'
-  assert "${output[2]}" equals 'bar=ls'
+  assert "${lines[1]}" equals 'foo=echo'
+  assert "${lines[2]}" equals 'bar=ls'
 }
 
 @test 'shows help with -h' {
@@ -38,10 +36,12 @@
   abbr foo=echo
   unabbr foo
   run abbr foo
+  assert "$output" is_empty
   assert "$state" equals 1
 }
 
 @test 'unregisters a non-existent abbreviation returns error' {
   run unabbr notfound
+  assert "$output" contains 'not found'
   assert "$state" equals 1
 }
