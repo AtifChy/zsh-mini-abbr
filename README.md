@@ -1,12 +1,11 @@
 # zsh-mini-abbr
 
-A minimal Zsh plugin for managing command and global abbreviations,
-inspired by fish shell's abbr.
+A minimal zsh plugin for creating regular and global abbreviations, inspired by fish shell's abbr.
 Easily register, expand, list, and remove abbreviations for faster command-line workflows.
 
 ## Features
 
-- Register command (`alias name=value`) and global (`alias -g name=value`) abbreviations
+- Register command (`alias name=command`) and global (`alias -g name=command`) abbreviations
 - Automatic expansion as you type
 - Simple commands to list, show, and remove abbreviations
 - Lightweight and dependency-free
@@ -27,7 +26,7 @@ Clone this repository and source the plugin in your `.zshrc`:
 
 ```sh
 git clone https://github.com/AtifChy/zsh-mini-abbr.git
-echo 'source /path/to/zsh-mini-abbr/zsh-mini-abbr.plugin.zsh' >> ~/.zshrc
+echo "source ${(q-)PWD}/zsh-mini-abbr/zsh-mini-abbr.plugin.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
 ```
 
 Restart your shell or run `source ~/.zshrc`.
@@ -74,12 +73,12 @@ $ abbr -h
 abbr is a command to manage abbreviations.
 
 USAGE:
-  abbr [options] {name=value ...}
+  abbr [options] {name=command ...}
   abbr -u {name ...}
 
 OPTIONS:
-  -c, --command       register alias as 'alias name=value' [default]
-  -g, --global        register alias as 'alias -g name=value'
+  -c, --command       register alias as 'alias name=command' [default]
+  -g, --global        register alias as 'alias -g name=command'
   -u, --unset         unset abbreviation
   -h, --help          show this help
 ```

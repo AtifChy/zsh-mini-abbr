@@ -96,12 +96,12 @@ function _zsh_mini_abbr::help() {
   print -P "%B%F{blue}abbr%f%b is a command to manage abbreviations.
 
 %U%BUSAGE:%b%u
-  abbr [options] {name=value ...}
+  abbr [options] {name=command ...}
   abbr -u {name ...}
 
 %U%BOPTIONS:%b%u
-  -c, --command       register alias as 'alias name=value' [default]
-  -g, --global        register alias as 'alias -g name=value'
+  -c, --command       register alias as 'alias name=command' [default]
+  -g, --global        register alias as 'alias -g name=command'
   -u, --unset         unset abbreviation
   -h, --help          show this help"
 }
