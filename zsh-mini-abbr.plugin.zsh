@@ -152,5 +152,13 @@ function abbr {
   return $result
 }
 
+function unabbr() {
+  if [[ -z $@ ]]; then
+    print "$0: not enough arguments" >&2
+    print "usage: unabbr {name ...}" >&2
+  fi
+  abbr -u $@
+}
+
 _zsh_mini_abbr::init
 unfunction _zsh_mini_abbr::init
