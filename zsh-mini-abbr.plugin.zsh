@@ -2,7 +2,7 @@ typeset -gr _ZSH_MINI_ABBR_VERSION="v0.2.0"
 typeset -gA _zsh_mini_abbrs
 typeset -gi _ZSH_MINI_ABBR_STATUS
 
-function _zsh_mini_abbr::register {
+function _zsh_mini_abbr::register() {
   local kind=$1 key=${2%%=*} value=${2#*=}
   case $kind in
     g) alias -g $key=$value ;;
@@ -12,7 +12,7 @@ function _zsh_mini_abbr::register {
   _zsh_mini_abbrs[$key]="$kind\0$value"
 }
 
-function mini-abbr-expand {
+function mini-abbr-expand() {
   local word=${${(Az)LBUFFER}[-1]}
   local abbr=${_zsh_mini_abbrs[$word]}
   if [[ -n $abbr ]]; then
@@ -21,30 +21,30 @@ function mini-abbr-expand {
   fi
 }
 
-function mini-abbr-expand-and-insert {
+function mini-abbr-expand-and-insert() {
   zle mini-abbr-expand
   zle self-insert
 }
 
-function mini-abbr-expand-and-accept-line {
+function mini-abbr-expand-and-accept-line() {
   zle mini-abbr-expand
   zle accept-line
 }
 
-function mini-abbr-expand-and-end-of-line {
+function mini-abbr-expand-and-end-of-line() {
   zle mini-abbr-expand
   zle end-of-line
 }
 
-function mini-abbr-no-expand {
+function mini-abbr-no-expand() {
   LBUFFER+=' '
 }
 
-function _zsh_mini_abbr::reset_status {
+function _zsh_mini_abbr::reset_status() {
   _ZSH_MINI_ABBR_STATUS=0
 }
 
-function _zsh_mini_abbr::init {
+function _zsh_mini_abbr::init() {
   zle -N mini-abbr-expand
   zle -N mini-abbr-expand-and-insert
   zle -N mini-abbr-no-expand
@@ -59,7 +59,7 @@ function _zsh_mini_abbr::init {
   add-zsh-hook precmd _zsh_mini_abbr::reset_status
 }
 
-function _zsh_mini_abbr::show {
+function _zsh_mini_abbr::show() {
   local kind_filter=$1
   local key=$2
   local abbr=${_zsh_mini_abbrs[$key]}
@@ -72,7 +72,7 @@ function _zsh_mini_abbr::show {
   return 0
 }
 
-function _zsh_mini_abbr::list {
+function _zsh_mini_abbr::list() {
   local kind_filters=$1
   for kind_filter in ${(s::)kind_filters}; do
     for key in ${(ko)_zsh_mini_abbrs}; do
@@ -81,7 +81,7 @@ function _zsh_mini_abbr::list {
   done
 }
 
-function _zsh_mini_abbr::unregister {
+function _zsh_mini_abbr::unregister() {
   local key=$1
   if [[ -n $_zsh_mini_abbrs[$key] ]]; then
     unalias $key
@@ -92,7 +92,7 @@ function _zsh_mini_abbr::unregister {
   fi
 }
 
-function _zsh_mini_abbr::help {
+function _zsh_mini_abbr::help() {
   print -P "%B%F{blue}abbr%f%b is a command to manage abbreviations.
 
 %U%BUSAGE:%b%u
@@ -106,7 +106,7 @@ function _zsh_mini_abbr::help {
   -h, --help          show this help"
 }
 
-function abbr {
+function abbr() {
   zparseopts -D -F -- \
     {h,-help}=help \
     {u,-unset}=unset \
