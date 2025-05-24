@@ -119,10 +119,14 @@ function abbr() {
   fi
 
   if (( $#unset )); then
+    if [[ -z $@ ]]; then
+      print "unabbr: not enough arguments" >&2
+      return 1
+    fi
     for key in $@; do
-      _zsh_mini_abbr::unregister $key
+      _zsh_mini_abbr::unregister $key || result=1
     done
-    return 0
+    return $result
   fi
 
   local kind
@@ -153,10 +157,6 @@ function abbr() {
 }
 
 function unabbr() {
-  if [[ -z $@ ]]; then
-    print "$0: not enough arguments" >&2
-    print "usage: unabbr {name ...}" >&2
-  fi
   abbr -u $@
 }
 
