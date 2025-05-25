@@ -24,12 +24,14 @@
   run abbr
   assert "${lines[1]}" equals 'foo=echo'
   assert "${lines[2]}" equals 'bar=ls'
+  assert "$state" equals 0
 }
 
 @test 'shows help with -h' {
   run abbr -h
   assert "$output" contains 'USAGE'
   assert "$output" contains 'OPTIONS'
+  assert "$state" equals 0
 }
 
 @test 'unregisters an abbreviation' {
