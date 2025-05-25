@@ -1,0 +1,41 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        zsh-version: [5.8, 5.9]
+
+    container:
+      image: zshusers/zsh:${{ matrix.zsh-version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl ncurses-bin
+          apt-get clean
+
+      - name: Download ZUnit and Revolver
+        run: |
+          mkdir -p ~/bin
+          curl -fsSL https://raw.githubusercontent.com/molovo/revolver/master/revolver -o ~/bin/revolver
+          curl -fsSL https://github.com/molovo/zunit/releases/download/v0.8.2/zunit -o ~/bin/zunit
+          chmod u+x ~/bin/revolver
+          chmod u+x ~/bin/zunit
+
+      - name: Run ZUnit tests
+        run: |
+          export TERM="xterm-256color"
+          export PATH="$HOME/bin:$PATH"
+          zunit --verbose
