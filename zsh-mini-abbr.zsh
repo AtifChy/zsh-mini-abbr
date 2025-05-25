@@ -107,6 +107,7 @@ function _zsh_mini_abbr::help() {
 }
 
 function abbr() {
+  # This zparseopts syntax is only compatible with zsh 5.8+
   zparseopts -D -F -- \
     {h,-help}=help \
     {u,-unset}=unset \

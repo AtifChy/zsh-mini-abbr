@@ -10,6 +10,8 @@ Easily register, expand, list, and remove abbreviations for faster command-line 
 - Simple commands to list, show, and remove abbreviations
 - Lightweight and dependency-free
 
+**Required zsh version: 5.8 or higher**
+
 ## Installation
 
 ### Package Manager
