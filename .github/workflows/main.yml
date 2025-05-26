@@ -2,7 +2,7 @@ name: Test
 
 on:
   push:
-    branches: [main]
+    branches: [main, actions]
   pull_request:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y curl ncurses-bin
+          apt-get install -y git curl ncurses-bin
           apt-get clean
 
       - name: Download ZUnit and Revolver
