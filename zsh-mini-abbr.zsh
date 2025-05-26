@@ -1,4 +1,4 @@
-typeset -gr _ZSH_MINI_ABBR_VERSION="v0.2.0"
+typeset -gr _ZSH_MINI_ABBR_VERSION="v0.2.5"
 typeset -gA _zsh_mini_abbrs
 typeset -gi _ZSH_MINI_ABBR_STATUS
 
