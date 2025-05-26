@@ -2,7 +2,7 @@ name: Test
 
 on:
   push:
-    branches: [main]
+    branches: [main, actions]
   pull_request:
 
 jobs:
@@ -17,14 +17,19 @@ jobs:
       image: zshusers/zsh:${{ matrix.zsh-version }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y curl ncurses-bin
+          apt-get install -y git curl ncurses-bin
           apt-get clean
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mark repository as safe
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
 
       - name: Download ZUnit and Revolver
         run: |

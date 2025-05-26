@@ -4,6 +4,14 @@
   load "../zsh-mini-abbr.zsh"
 }
 
+@test 'exports correct version' {
+  tags=(${(@f)$(git tag --list)})
+  tags=(${(O)tags})
+  run print -r -- "${tags[1]}"
+  assert "$output" is_not_empty
+  assert "$output" same_as "${_ZSH_MINI_ABBR_VERSION}"
+}
+
 @test 'registers and expands a command abbreviation' {
   abbr foo=echo
   run abbr "foo"
