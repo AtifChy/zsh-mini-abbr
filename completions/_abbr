@@ -9,6 +9,7 @@ function _abbr() {
   _arguments -C \
     '(-c --command)'{-c,--command}'[register as command alias]' \
     '(-g --global)'{-g,--global}'[register as global alias]' \
+    '(-e --eval)'{-e,--eval}'[evaluate abbreviation]' \
     '(-u --unset)'{-u,--unset}'[unset abbreviation]' \
     '(-h --help)'{-h,--help}'[show help]' \
     '*:abbr:->abbreviations' && return 0
@@ -20,7 +21,7 @@ function _abbr() {
         local -a abbrs
         abbrs=(${(k)_zsh_mini_abbrs})
         _describe 'abbreviation' abbrs
-      elif (( $words[(I)-c|--command] || $words[(I)-g|--global] )); then
+      elif (( $words[(I)-c|--command] || $words[(I)-g|--global] || $words[(I)-e|--eval] )); then
         # Complete name=command for new abbreviations
         _message 'name=command'
       else

@@ -1,24 +1,49 @@
-typeset -gr _ZSH_MINI_ABBR_VERSION="v0.2.5"
+(( ${+_ZSH_MINI_ABBR_VERSION} )) || typeset -gr _ZSH_MINI_ABBR_VERSION="v0.2.5"
 typeset -gA _zsh_mini_abbrs
 typeset -gi _ZSH_MINI_ABBR_STATUS
 
 function _zsh_mini_abbr::register() {
-  local kind=$1 key=${2%%=*} value=${2#*=}
+  local kind=$1 key=${2%%=*} value=${2#*=} is_eval=$3
   case $kind in
     g) alias -g $key=$value ;;
     c) alias $key=$value ;;
     *) return 1 ;;
   esac
-  _zsh_mini_abbrs[$key]="$kind\0$value"
+  _zsh_mini_abbrs[$key]="$kind\0$value\0$is_eval"
 }
 
 function mini-abbr-expand() {
-  local word=${${(Az)LBUFFER}[-1]}
-  local abbr=${_zsh_mini_abbrs[$word]}
-  if [[ -n $abbr ]]; then
-    zle _expand_alias
-    _ZSH_MINI_ABBR_STATUS=1
+  emulate -L zsh -o noaliases -o noglob
+
+  local -a words
+  local -i is_eval
+  local lastword abbr prefix inserted
+
+  # Extract the last word from the command line left buffer
+  words=( ${(s. .)LBUFFER} )
+  lastword=${words[-1]#(\"|)(\$\(|\`)}
+
+  abbr=${_zsh_mini_abbrs[$lastword]}
+  [[ -n $abbr ]] || return 0
+  is_eval=${${(s.\0.)abbr}[3]}
+
+  # Extract the prefix of the last word
+  prefix=${LBUFFER%$lastword}
+
+  # Try to expand the alias for the last word; if not possible, exit the function
+  zle _expand_alias || return 0
+
+  # Get the inserted text after prefix
+  inserted=${LBUFFER#$prefix}
+
+  if (( is_eval )) && [[ -n $inserted ]]; then
+    LBUFFER=$prefix${(e)inserted}
+  else
+    LBUFFER=$prefix$inserted
   fi
+
+  LBUFFER=${LBUFFER%% }
+  _ZSH_MINI_ABBR_STATUS=1
 }
 
 function mini-abbr-expand-and-insert() {
@@ -102,17 +127,21 @@ function _zsh_mini_abbr::help() {
 %U%BOPTIONS:%b%u
   -c, --command       register alias as 'alias name=command' [default]
   -g, --global        register alias as 'alias -g name=command'
+  -e, --eval          evaluate the command before expanding
   -u, --unset         unset abbreviation
   -h, --help          show this help"
 }
 
 function abbr() {
+  local -i result=0
+
   # This zparseopts syntax is only compatible with zsh 5.8+
   zparseopts -D -F -- \
     {h,-help}=help \
     {u,-unset}=unset \
     {c,-command}=command \
-    {g,-global}=global
+    {g,-global}=global \
+    {e,-eval}=eval
 
   if (( $#help )); then
     _zsh_mini_abbr::help
@@ -120,7 +149,7 @@ function abbr() {
   fi
 
   if (( $#unset )); then
-    if [[ -z $@ ]]; then
+    if (( ! $# )); then
       print "unabbr: not enough arguments" >&2
       return 1
     fi
@@ -137,20 +166,19 @@ function abbr() {
     kind=g
   fi
 
+  (( ! $#eval )); local -i is_eval=$?
+
   if (( ! $# )); then
     _zsh_mini_abbr::list ${kind:-gc}
     return 0
   fi
 
-  local result=0
   while (( $# )); do
     if [[ $1 =~ "=" ]]; then
-      _zsh_mini_abbr::register ${kind:-c} $1
+      _zsh_mini_abbr::register ${kind:-c} $1 $is_eval
     else
       _zsh_mini_abbr::show ${kind:-c} $1
-      if [[ $? != 0 ]]; then
-        result=1
-      fi
+      [[ $? -eq 1 ]] && result=1
     fi
     shift
   done
