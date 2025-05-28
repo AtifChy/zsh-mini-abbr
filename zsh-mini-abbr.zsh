@@ -37,7 +37,8 @@ function mini-abbr-expand() {
   inserted=${LBUFFER#$prefix}
 
   if (( is_eval )) && [[ -n $inserted ]]; then
-    LBUFFER=$prefix${(e)inserted}
+    inserted=${(e)inserted}
+    LBUFFER=$prefix${inserted%% }
   else
     LBUFFER=$prefix$inserted
   fi
